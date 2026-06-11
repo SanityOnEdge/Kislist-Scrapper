@@ -2,6 +2,10 @@
 
 Zaawansowany scraper produktów z list Kislist.com. Narzędzie automatyzuje pobieranie danych i obrazów wariantów ze stron dostawców (m.in. Porta, Dekordia, Domni, Lazienkarium), wykorzystując Selenium oraz analizę AI.
 
+## O procesie tworzenia (AI-Assisted Development)
+
+Architektura systemu, logika biznesowa oraz struktura przepływu danych zostały zaprojektowane autorsko. Sam kod źródłowy został wygenerowany, debugowany i zoptymalizowany przy wykorzystaniu technik Prompt Engineeringu oraz modeli LLM. Projekt stanowi praktyczny przykład nowoczesnego podejścia AI-Assisted Development, gdzie sztuczna inteligencja pełni rolę wykonawczą dla zdefiniowanych założeń inżynieryjnych
+
 ## Główne funkcje
 
 * **Głęboki scraping wariantów:** Skrypt analizuje źródłowe strony producentów, pobierając wszystkie dostępne opcje kolorystyczne i powiązane zdjęcia w najwyższej jakości.
