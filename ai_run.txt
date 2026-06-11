@@ -1,0 +1,3 @@
+cd /home/sanity_on_edge/PythonProject
+source .venv/bin/activate.fish
+python3 main.py

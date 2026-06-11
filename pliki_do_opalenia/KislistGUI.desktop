@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=KislistScraper – GUI
+Comment=Otwórz GUI skrapera Kislist
+Exec=/usr/bin/python /mnt/RZECZY/KislistScraper_Pro/run_kislist.py --gui
+Terminal=false
+Icon=applications-graphics
+Categories=Utility;Graphics;
