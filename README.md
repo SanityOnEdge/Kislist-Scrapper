@@ -4,7 +4,7 @@ Zaawansowany scraper produktów z list Kislist.com. Narzędzie automatyzuje pobi
 
 ## O procesie tworzenia (AI-Assisted Development)
 
-Architektura systemu, logika biznesowa oraz struktura przepływu danych zostały zaprojektowane autorsko. Sam kod źródłowy został wygenerowany, debugowany i zoptymalizowany przy wykorzystaniu technik Prompt Engineeringu oraz modeli LLM. Projekt stanowi praktyczny przykład nowoczesnego podejścia AI-Assisted Development, gdzie sztuczna inteligencja pełni rolę wykonawczą dla zdefiniowanych założeń inżynieryjnych
+Architektura systemu, logika projektu oraz struktura przepływu danych zostały zaprojektowane autorsko. Sam kod źródłowy został wygenerowany, debugowany i zoptymalizowany przy wykorzystaniu technik Prompt Engineeringu oraz modeli LLM. Projekt stanowi praktyczny przykład nowoczesnego podejścia AI-Assisted Development, gdzie sztuczna inteligencja pełni rolę wykonawczą dla zdefiniowanych założeń inżynieryjnych
 
 ## Główne funkcje
 
