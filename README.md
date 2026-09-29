@@ -1,27 +1,26 @@
 # KislistScraper Pro
 
-Zaawansowany scraper produktów z list Kislist.com. Narzędzie automatyzuje pobieranie danych i obrazów wariantów ze stron dostawców (m.in. Porta, Dekordia, Domni, Lazienkarium), wykorzystując Selenium oraz analizę AI.
+An advanced product scraper for Kislist.com listings. The tool automates the retrieval of data and images of product variants from supplier websites (including Porta, Dekordia, Domni, and Lazienkarium) using Selenium and AI analysis.
 
-## O procesie tworzenia (AI-Assisted Development)
+## About the Development Process (AI-Assisted Development)
 
-Architektura systemu, logika projektu oraz struktura przepływu danych zostały zaprojektowane autorsko. Sam kod źródłowy został wygenerowany, debugowany i zoptymalizowany przy wykorzystaniu technik Prompt Engineeringu oraz modeli LLM. Projekt stanowi praktyczny przykład nowoczesnego podejścia AI-Assisted Development, gdzie sztuczna inteligencja pełni rolę wykonawczą dla zdefiniowanych założeń inżynieryjnych
+The system architecture, project logic, and data flow structure were custom-designed. The source code itself was generated, debugged, and optimized using Prompt Engineering techniques and LLM models. The project serves as a practical example of a modern AI-Assisted Development approach, where artificial intelligence acts as an executor for defined engineering objectives
 
-## Główne funkcje
+## Key Features
 
-* **Głęboki scraping wariantów:** Skrypt analizuje źródłowe strony producentów, pobierając wszystkie dostępne opcje kolorystyczne i powiązane zdjęcia w najwyższej jakości.
-* **Integracja z AI:** Wykorzystanie modeli językowych (Ollama lub OpenAI API) do inteligentnej analizy struktury strony (DOM) oraz nazw plików w celu trafnego kategoryzowania materiałów i kolorów.
-* **Wielowątkowość:** Automatyczna detekcja zasobów systemowych (CPU/RAM) w celu optymalizacji liczby wątków pracujących równolegle.
-* **Dwa tryby pracy:** Możliwość uruchomienia przez interfejs graficzny (GUI - Tkinter) dla łatwej obsługi lub z poziomu wiersza poleceń (CLI) w celu automatyzacji zadań wsadowych.
+* **In-depth variant scraping:** The script analyzes manufacturers’ source pages, retrieving all available color options and related images in the highest quality.
+* **AI integration:** Utilizes language models (Ollama or OpenAI API) to intelligently analyze the page structure (DOM) and file names in order to accurately categorize materials and colors.
+* **Multithreading:** Automatic detection of system resources (CPU/RAM) to optimize the number of threads running in parallel.
+* **Two operating modes:** Can be launched via a graphical user interface (GUI—Tkinter) for easy use or from the command line (CLI) to automate batch tasks.
 
-## Struktura pobranych danych
+## Structure of Downloaded Data
 
-Produkty są automatycznie kategoryzowane w przejrzystej strukturze katalogów:
-
+Products are automatically categorized into a clear structure
 ```text
-Produkty_z_Kislist/
-├── [Kategoria] (np. Drzwi_Wewnetrzne)/
-│   ├── [ID_Nazwa_Produktu]/
-│   │   ├── [Nazwa_Wariantu] (np. Dab_Mauvella)/
+Products_from_Kislist/
+├── [Category] (e.g., Interior_Doors)/
+│   ├── [Product_ID_Name]/
+│   │   ├── [Variant_Name] (e.g., Dab_Mauvella)/
 │   │   │   ├── image.jpg
 │   │   │   ├── door_variant.jpg
-│   │   │   └── variant_info.json (metadane)
+│   │   │   └── variant_info.json (metadata)
