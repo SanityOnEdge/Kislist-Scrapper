@@ -9,6 +9,7 @@ from urllib.parse import urljoin
 from pathlib import Path
 import csv
 from typing import Dict, List, Any
+from utils import sanitize_filename
 
 class KislistScraper:
     def __init__(self, output_dir: str = "kislist_products"):
@@ -58,27 +59,6 @@ class KislistScraper:
             section_dir.mkdir(exist_ok=True)
             # Dalsze podkatalogi (pojedyncze produkty) będą tworzone w trakcie przetwarzania
             
-    def sanitize_filename(self, filename: str) -> str:
-        """
-        Czyści nazwę pliku z niedozwolonych znaków
-        """
-        # Zamienia polskie znaki i usuwa problematyczne znaki
-        replacements = {
-            'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n', 
-            'ó': 'o', 'ś': 's', 'ż': 'z', 'ź': 'z',
-            'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N',
-            'Ó': 'O', 'Ś': 'S', 'Ż': 'Z', 'Ź': 'Z'
-        }
-        
-        for polish, latin in replacements.items():
-            filename = filename.replace(polish, latin)
-            
-        # Usuwa lub zamienia problematyczne znaki
-        filename = re.sub(r'[<>:"/\\|?*]', '_', filename)
-        filename = re.sub(r'\s+', '_', filename)
-        
-        return filename.strip('_')
-    
     def download_image(self, url: str, filepath: Path) -> bool:
         """
         Pobiera obraz z podanego URL
