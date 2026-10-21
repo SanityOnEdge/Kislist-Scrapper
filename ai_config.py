@@ -3,7 +3,8 @@
 Konfiguracja AI dla KislistScraper
 Zawiera ustawienia dla różnych providerów AI
 """
-
+import json
+import requests
 import os
 
 # Domyślne ustawienia AI
@@ -20,6 +21,7 @@ AI_CONFIG = {
         'max_tokens': 2000,
     }
 }
+
 
 def get_ai_config():
     """
@@ -134,6 +136,55 @@ def setup_ai_environment():
 
     print("\n[OK] Konfiguracja gotowa!")
     print("   Uruchom ponownie terminal aby zastosować zmiany.")
+
+def get_client():
+    """Zwraca słownik konfiguracyjny, jeśli dany provider AI jest dostępny."""
+    available, _ = check_ai_availability()
+    if not available:
+        return None
+    return get_ai_config()
+
+def complete_json(prompt: str) -> dict:
+    """Wysyła zapytanie do skonfigurowanego modelu AI i wymusza odpowiedź w formacie JSON."""
+    config = get_ai_config()
+    
+    if config['provider'] == 'ollama':
+        response = requests.post(
+            f"{config['base_url']}/api/generate",
+            json={
+                "model": config['model'],
+                "prompt": prompt,
+                "stream": False,
+                "format": "json",
+                "options": {
+                    "temperature": 0.1
+                }
+            },
+            timeout=60
+        )
+        response.raise_for_status()
+        raw_text = response.json().get('response', '{}')
+        return json.loads(raw_text)
+
+    elif config['provider'] == 'openai':
+        response = requests.post(
+            "https://api.openai.com/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {config['api_key']}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": config['model'],
+                "messages": [{"role": "user", "content": prompt}],
+                "response_format": {"type": "json_object"},
+                "temperature": 0.1,
+                "max_tokens": config['max_tokens']
+            },
+            timeout=30
+        )
+        response.raise_for_status()
+        raw_text = response.json()['choices'][0]['message']['content']
+        return json.loads(raw_text)
 
 if __name__ == "__main__":
     try:
