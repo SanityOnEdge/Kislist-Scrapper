@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Próbka: skrapowanie dwóch produktów z lazienkarium.pl (umywalki)
-Uruchomienie:
-  python /mnt/RZECZY/KislistScraper_Pro/sample_scrape_lazienkarium.py \
-    --output "/mnt/RZECZY/Produkty_z_Kislist"
-"""
+
 import argparse
 from pathlib import Path
 from selenium_variant_scraper import SeleniumVariantScraper
@@ -20,6 +15,7 @@ def main():
     base = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser()
     ap.add_argument('--output', default=str(base / 'output' / 'Produkty_z_Kislist'))
+    args = ap.parse_args()
 
     out_root = Path(args.output)
     ptype = 'umywalka'
