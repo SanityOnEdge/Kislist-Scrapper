@@ -1279,7 +1279,7 @@ def test_selenium_scraper():
     scraper = SeleniumVariantScraper(headless=False)
     url = "https://www.porta.com.pl/modele-drzwi/porta-decor-model-p"
     product_name = "001_PORTA_DECOR_MODEL_P"
-    scraper.scrape_universal_variants(url, product_name)
+    scraper.scrape_universal_variants(url, product_name, "./output/test_porta", "drzwi")
 
 if __name__ == "__main__":
     test_selenium_scraper()
