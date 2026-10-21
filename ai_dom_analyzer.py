@@ -1,11 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-AI DOM Analyzer
-- Jeśli AI (Ollama/OpenAI) jest dostępne wg ai_config, buduje zwięzły zrzut DOM (tylko obrazy i powiązane elementy)
-  i prosi model o klasyfikację: product_main, product_variant, handle, ad, logo, ignore.
-- Jeśli AI nie jest dostępne, zwraca None (scraper używa heurystyk).
-"""
+
 from typing import Optional, Dict, Any, List
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
