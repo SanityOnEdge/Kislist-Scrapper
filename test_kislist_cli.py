@@ -15,6 +15,7 @@ import sys
 from pathlib import Path
 import requests
 from datetime import datetime
+from utils import sanitize_filename
 
 # Local imports
 from selenium_variant_scraper import SeleniumVariantScraper
@@ -121,14 +122,15 @@ def collect_products(kislist_url: str, limit: int):
 
 
 def main():
+    base = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser()
     ap.add_argument('--url', required=True, help='Kislist list-preview URL')
     ap.add_argument('--limit', type=int, default=2, help='Number of products to test (max collected this run)')
     ap.add_argument('--output', default='/mnt/RZECZY/Produkty_z_Kislist', help='Main output folder')
     ap.add_argument('--batch', type=int, default=50, help='Batch size per run')
-    ap.add_argument('--state', default='/mnt/RZECZY/KislistScraper_Pro/.kislist_state.json', help='Checkpoint state file')
+    ap.add_argument('--state', default=str(base / 'output' / 'Produkty_z_Kislist')), help='Checkpoint state file')
     ap.add_argument('--auto', action='store_true', help='Process all batches automatically in a single run')
-    ap.add_argument('--log', help='Path to JSONL log file; defaults to /mnt/RZECZY/AgentMode_Archive/run_logs/log_YYYYmmdd_HHMMSS.jsonl')
+    ap.add_argument('--log', help=f'Path to JSONL log file; defaults to {str(base / 'output' / 'Produkty_z_Kislist'))}')
     args = ap.parse_args()
 
     out_root = Path(args.output)
@@ -139,7 +141,7 @@ def main():
         log_path = Path(args.log)
     else:
         ts = datetime.now().strftime('%Y%m%d_%H%M%S')
-        log_path = Path('/mnt/RZECZY/AgentMode_Archive/run_logs') / f'log_{ts}.jsonl'
+        log_path = Path(f'{str(base / 'output' / 'Produkty_z_Kislist'))}') / f'log_{ts}.jsonl'
     log_path.parent.mkdir(parents=True, exist_ok=True)
 
     def write_log(event: dict):
