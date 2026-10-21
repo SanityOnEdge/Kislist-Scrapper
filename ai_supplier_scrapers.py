@@ -1,15 +1,14 @@
 #!/usr/bin/env python3
-"""
-AI Supplier Scrapers - integracja AI scrapera z systemem KislistScraper
-Zastępuje twardą logikę regex-ową inteligentnym AI
-"""
-
-from typing import List
-from variant_detector_simple import ProductVariant
-from ai_scraper import AIWebScraper, AIProductAnalysis
+# ai_supplier_scrapers.py
+from typing import List, Optional
 import os
+from variant_detector_simple import ProductVariant
+from ai_scraper import AIWebScraper, AIProductVariant
+from utils import sanitize_filename, extract_domain
 
-class AIPortaScraper:
+class BaseAIScraper:
+    """Klasa bazowa dla scraperów wykorzystujących AI."""
+    
     def __init__(self, session, ai_provider="ollama", model="llama3.2:latest", api_key=None):
         self.session = session
         self.ai_scraper = AIWebScraper(
@@ -18,108 +17,46 @@ class AIPortaScraper:
             api_key=api_key
         )
 
-    def scrape_product(self, url: str) -> List[ProductVariant]:
-        print(f"[INFO] AI Porta Scraper analizuje: {url}")
+    def _resolve_raw_name(self, ai_variant: AIProductVariant) -> Optional[str]:
+        return ai_variant.color or ai_variant.name
 
+    def _clean_folder_name(self, name: str) -> Optional[str]:
+        if not name:
+            return None
+        clean = sanitize_filename(name)
+        if len(clean) < 2 or clean.lower() in {'default', 'none', 'null', 'undefined', 'unknown'}:
+            return None
+        return clean.title()
+
+    def scrape_product(self, url: str) -> List[ProductVariant]:
+        print(f"🧠 {self.__class__.__name__} analizuje: {url}")
         try:
             ai_analysis = self.ai_scraper.analyze_product_page(url)
-
             if not ai_analysis:
-                print(f"   [BŁĄD] AI nie mogło przeanalizować strony")
                 return []
 
             variants = []
             for ai_variant in ai_analysis.variants:
-                folder_name = ai_variant.color if ai_variant.color else ai_variant.name
-                folder_name = self._clean_folder_name(folder_name)
-
+                folder_name = self._clean_folder_name(self._resolve_raw_name(ai_variant))
                 if folder_name and ai_variant.images:
-                    variant = ProductVariant(
+                    variants.append(ProductVariant(
                         color=folder_name,
                         images=ai_variant.images,
                         url=url
-                    )
-                    variants.append(variant)
-                    print(f"   [OK] AI wykryło wariant: {folder_name} ({len(ai_variant.images)} obrazów)")
-
-            if variants:
-                print(f"   [OK] AI znalazło {len(variants)} wariantów")
-
+                    ))
             return variants
-
         except Exception as e:
-            print(f"   [BŁĄD] Błąd AI Porta Scraper: {e}")
+            print(f"❌ Błąd {self.__class__.__name__}: {e}")
             return []
 
-    def _clean_folder_name(self, name: str) -> str:
-        if not name:
-            return None
+class AIPortaScraper(BaseAIScraper):
+    """Scraper AI dedykowany dla porta.com.pl."""
+    pass
 
-        import re
-        clean = re.sub(r'[<>:"/\\|?*]', '_', name)
-        clean = re.sub(r'\s+', '_', clean)
-        clean = clean.strip('_')
-
-        if len(clean) < 2 or clean.lower() in ['default', 'none', 'null', 'undefined']:
-            return None
-
-        return clean.title()
-
-class AIUniversalScraper:
-    def __init__(self, session, ai_provider="ollama", model="llama3.2:latest", api_key=None):
-        self.session = session
-        self.ai_scraper = AIWebScraper(
-            ai_provider=ai_provider,
-            model=model,
-            api_key=api_key
-        )
-
-    def scrape_product(self, url: str) -> List[ProductVariant]:
-        print(f"[INFO] AI Universal Scraper analizuje: {url}")
-
-        try:
-            ai_analysis = self.ai_scraper.analyze_product_page(url)
-
-            if not ai_analysis:
-                print(f"   [BŁĄD] AI nie mogło przeanalizować strony")
-                return []
-
-            variants = []
-            for ai_variant in ai_analysis.variants:
-                folder_name = ai_variant.color or ai_variant.material or ai_variant.name
-                folder_name = self._clean_folder_name(folder_name)
-
-                if folder_name and ai_variant.images:
-                    variant = ProductVariant(
-                        color=folder_name,
-                        images=ai_variant.images,
-                        url=url
-                    )
-                    variants.append(variant)
-                    print(f"   [OK] AI wykryło: {folder_name} ({len(ai_variant.images)} obrazów)")
-
-            if variants:
-                print(f"   [OK] AI przeanalizowało domenę {url.split('/')[2]}")
-
-            return variants
-
-        except Exception as e:
-            print(f"   [BŁĄD] Błąd AI Universal Scraper: {e}")
-            return []
-
-    def _clean_folder_name(self, name: str) -> str:
-        if not name:
-            return None
-
-        import re
-        clean = re.sub(r'[<>:"/\\|?*]', '_', name)
-        clean = re.sub(r'\s+', '_', clean)
-        clean = clean.strip('_')
-
-        if len(clean) < 2:
-            return None
-
-        return clean.title()
+class AIUniversalScraper(BaseAIScraper):
+    """Uniwersalny scraper AI uwzględniający również materiał produktu."""
+    def _resolve_raw_name(self, ai_variant: AIProductVariant) -> Optional[str]:
+        return ai_variant.color or ai_variant.material or ai_variant.name
 
 class AISupplierScraperFactory:
     @staticmethod
