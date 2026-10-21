@@ -16,15 +16,15 @@ import sys
 from pathlib import Path
 
 def main():
+    base = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser()
     ap.add_argument('--gui', action='store_true', help='Launch Selenium GUI')
     ap.add_argument('--url', help='Kislist list-preview URL (for CLI mode)')
     ap.add_argument('--batch', type=int, default=50)
     ap.add_argument('--limit', type=int, default=999)
-    ap.add_argument('--output', default='/mnt/RZECZY/Produkty_z_Kislist')
-    ap.add_argument('--state', default='/mnt/RZECZY/KislistScraper_Pro/.kislist_state.json')
+    ap.add_argument('--output', default=str(base / 'output' / 'Produkty_z_Kislist'))
+    ap.add_argument('--state', default=str(base / '.kislist_state.json'))
     ap.add_argument('--auto', action='store_true', help='Process all batches automatically')
-    args = ap.parse_args()
 
     base = Path(__file__).resolve().parent
 
