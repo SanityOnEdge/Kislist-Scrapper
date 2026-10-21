@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Skrypt do pobierania i katalogowania produktów ze strony kislist.com
-
-Autor: Assistant
-Data: 2025-09-25
-"""
 
 import re
 import json
