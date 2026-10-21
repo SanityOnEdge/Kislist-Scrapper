@@ -36,7 +36,7 @@ class SeleniumVariantScraper:
         from pathlib import Path as _Path
         if not debug_log_path:
             ts = datetime.now().strftime('%Y%m%d_%H%M%S')
-            debug_dir = _Path('/mnt/RZECZY/AgentMode_Archive/scraper_debug')
+            debug_dir = _Path(__file__).resolve().parent / 'logs' / 'scraper_debug'
             debug_dir.mkdir(parents=True, exist_ok=True)
             debug_log_path = str(debug_dir / f'log_{ts}.jsonl')
         self._debug_log_path = debug_log_path
