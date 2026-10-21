@@ -1,5 +1,7 @@
 # KislistScraper Pro
 
+(Autor: Maciej Bronisz)
+
 An advanced product scraper for Kislist.com listings. The tool automates the retrieval of data and images of product variants from supplier websites (including Porta, Dekordia, Domni, and Lazienkarium) using Selenium and AI analysis.
 
 ## About the Development Process (AI-Assisted Development)
