@@ -17,9 +17,9 @@ URLS = [
 
 
 def main():
+    base = Path(__file__).resolve().parent
     ap = argparse.ArgumentParser()
-    ap.add_argument('--output', default='/mnt/RZECZY/Produkty_z_Kislist')
-    args = ap.parse_args()
+    ap.add_argument('--output', default=str(base / 'output' / 'Produkty_z_Kislist'))
 
     out_root = Path(args.output)
     ptype = 'umywalka'
