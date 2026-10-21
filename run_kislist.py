@@ -25,6 +25,7 @@ def main():
     ap.add_argument('--output', default=str(base / 'output' / 'Produkty_z_Kislist'))
     ap.add_argument('--state', default=str(base / '.kislist_state.json'))
     ap.add_argument('--auto', action='store_true', help='Process all batches automatically')
+    args = ap.parse_args()
 
     base = Path(__file__).resolve().parent
 
