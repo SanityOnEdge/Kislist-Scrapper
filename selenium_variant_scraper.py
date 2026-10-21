@@ -1199,52 +1199,7 @@ class SeleniumVariantScraper:
 
         return success_count > 0
 
-    def click_handle_option(self, driver, handle_name: str, wait_after_click: float = 1.0) -> bool:
-        try:
-            from selenium.webdriver.common.by import By
-            import time
-            name_low = handle_name.lower()
-            xpath = f"//*[self::button or self::a or self::div][contains(translate(normalize-space(text()), 'ABCDEFGHIJKLMNOPQRSTUVWXYZĄĆĘŁŃÓŚŹŻ', 'abcdefghijklmnopqrstuvwxyząćęłńóśźż'), '{name_low}')]"
-            elems = driver.find_elements(By.XPATH, xpath)
-            if elems:
-                driver.execute_script("arguments[0].click();", elems[0])
-                time.sleep(wait_after_click)
-                return True
-        except Exception:
-            pass
-        return False
 
-    def capture_element_screenshot(self, element, save_path: Path) -> bool:
-        try:
-            save_path.parent.mkdir(parents=True, exist_ok=True)
-            return element.screenshot(str(save_path))
-        except Exception:
-            return False
-
-    def _png_to_jpg(self, png_path: Path, jpg_path: Path) -> bool:
-        try:
-            if Image is None:
-                return False
-            with Image.open(png_path) as im:
-                rgb = im.convert('RGB')
-                jpg_path.parent.mkdir(parents=True, exist_ok=True)
-                rgb.save(jpg_path, format='JPEG', quality=92, optimize=True)
-            return True
-        except Exception:
-            return False
-
-    def _ext_from_magic(self, content: bytes) -> str:
-        try:
-            if len(content) >= 12:
-                if content[:2] == b'\xff\xd8':
-                    return '.jpg'
-                if content[:8] == b'\x89PNG\r\n\x1a\n':
-                    return '.png'
-                if content[:4] == b'RIFF' and content[8:12] == b'WEBP':
-                    return '.webp'
-        except Exception:
-            pass
-        return ''
 
     def download_image(self, url: str, filepath: Path):
         try:
@@ -1304,6 +1259,7 @@ class SeleniumVariantScraper:
 
         replacements = {
             'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n',
+            'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
             'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
             'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N',
             'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z'
