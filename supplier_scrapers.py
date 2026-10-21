@@ -553,17 +553,6 @@ class PortaScraper:
         
         return []
         
-        # Znajdź najlepsze obrazy produktu
-        images = self._find_product_images_porta(page_content, base_url)
-        
-        if images:
-            return [ProductVariant(
-                color=main_color,
-                images=images[:3],
-                url=url
-            )]
-        
-        return []
     
     def _find_product_images_porta(self, page_content: str, base_url: str) -> List[str]:
         """Znajduje WSZYSTKIE wysokiej jakości obrazy produktu na porta.com.pl"""
