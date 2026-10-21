@@ -10,6 +10,7 @@ import requests
 from pathlib import Path
 from typing import List, Dict, Any
 from ai_scraper import AIProductAnalysis, AIProductVariant
+from utils import sanitize_filename
 
 class AIVariantSaver:
     """Zapisuje warianty wykryte przez AI scraper"""
@@ -217,29 +218,6 @@ class AIVariantSaver:
         else:
             return '.jpg'
 
-    def sanitize_filename(self, filename: str) -> str:
-        import re
-        if not filename:
-            return "unknown"
-
-        replacements = {
-            'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n',
-            'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
-            'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N',
-            'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z'
-        }
-
-        for pl, en in replacements.items():
-            filename = filename.replace(pl, en)
-
-        filename = re.sub(r'[<>:\"/\\|?*]', '_', filename)
-        filename = re.sub(r'\s+', '_', filename)
-        filename = filename.strip('_')
-
-        if len(filename) > 100:
-            filename = filename[:100]
-
-        return filename or "unknown"
 
     def extract_domain(self, url: str) -> str:
         try:
