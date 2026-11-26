@@ -35,7 +35,7 @@ class AIVariantSaver:
         category_dir.mkdir(parents=True, exist_ok=True)
 
         saved_count = 0
-        base_product_name = self.sanitize_filename(analysis.product_name)
+        base_product_name = sanitize_filename(analysis.product_name)
 
         # Tworzenie głównego folderu produktu
         product_dir = category_dir / base_product_name
@@ -44,7 +44,7 @@ class AIVariantSaver:
         for idx, variant in enumerate(analysis.variants, 1):
             try:
                 # Unikatowa nazwa dla każdego wariantu
-                variant_color = self.sanitize_filename(variant.color or variant.name or f"variant_{idx}")
+                variant_color = sanitize_filename(variant.color or variant.name or f"variant_{idx}")
 
                 # Folder dla wariantu wewnątrz folderu produktu
                 variant_dir = product_dir / variant_color
