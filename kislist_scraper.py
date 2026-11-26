@@ -251,13 +251,18 @@ def main():
     """
     Funkcja główna
     """
+    # LIST ID 
+
+    LIST_ID = ''
+    
     # URL do scrapowania - może być przekazany jako argument
+    
     import sys
     
     if len(sys.argv) > 1:
         url = sys.argv[1]
     else:
-        url = "https://kislist.com/list-preview/CzjnBnLJkchnqmYFI2An2KDZhFA0crwntz7D?lang=pl"
+        url = f"https://kislist.com/list-preview/{LIST_ID}"
     
     # Katalog wyjściowy - może być przekazany jako drugi argument
     if len(sys.argv) > 2:
