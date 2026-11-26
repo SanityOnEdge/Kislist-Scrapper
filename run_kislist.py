@@ -7,13 +7,14 @@ Unified runner for KislistScraper Pro
 Examples:
   python run_kislist.py --gui
   python run_kislist.py --url "https://kislist.com/list-preview/..." --auto --batch 50 --limit 999 \
-         --output "/mnt/RZECZY/Produkty_z_Kislist"
+         --output "./output/Produkty_z_Kislist"
 """
 
 import argparse
 import subprocess
 import sys
 from pathlib import Path
+
 
 def main():
     base = Path(__file__).resolve().parent
@@ -27,14 +28,12 @@ def main():
     ap.add_argument('--auto', action='store_true', help='Process all batches automatically')
     args = ap.parse_args()
 
-    base = Path(__file__).resolve().parent
-
     if args.gui:
         cmd = [sys.executable, str(base / 'selenium_gui.py')]
         return subprocess.call(cmd)
 
     if not args.url:
-        print('❌ Podaj --url lub użyj --gui')
+        print('[BŁĄD] Podaj --url lub użyj --gui')
         return 2
 
     cmd = [
@@ -48,8 +47,9 @@ def main():
     if args.auto:
         cmd.append('--auto')
 
-    print('🚀 Start CLI:', ' '.join(cmd))
+    print('[INFO] Start CLI:', ' '.join(cmd))
     return subprocess.call(cmd)
+
 
 if __name__ == '__main__':
     sys.exit(main())
