@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Headless test runner for KislistScraper.
+Headless CLI runner for KislistScraper.
 - Fetches products from a Kislist list URL (parsing window.sections)
 - Picks first N products with supplier URLs
 - Runs SeleniumVariantScraper in headless mode to save variant images
@@ -12,12 +12,11 @@ import argparse
 import json
 import re
 import sys
+from datetime import datetime
 from pathlib import Path
 import requests
-from datetime import datetime
-from utils import sanitize_filename
 
-# Local imports
+from utils import sanitize_filename
 from selenium_variant_scraper import SeleniumVariantScraper
 
 PRODUCER_DOMAINS = [
@@ -40,7 +39,6 @@ PRODUCT_TYPES = {
     'stelaż': ['stelaż', 'frame', 'mounting', 'podtynkowy', 'installation']
 }
 
-# Mapa typów pochodzących z nazw sekcji w Kislist (priorytetowa)
 SECTION_TYPE_MAP = [
     ('drzwi', 'drzwi'),
     ('listwy', 'listwy_przypodłogowe'),
@@ -63,30 +61,12 @@ HEADERS = {
 }
 
 
-def sanitize_filename(name: str) -> str:
-    if not name:
-        return 'unknown'
-    replacements = {
-        'ą': 'a', 'ć': 'c', 'ę': 'e', 'ł': 'l', 'ń': 'n',
-        'ó': 'o', 'ś': 's', 'ź': 'z', 'ż': 'z',
-        'Ą': 'A', 'Ć': 'C', 'Ę': 'E', 'Ł': 'L', 'Ń': 'N',
-        'Ó': 'O', 'Ś': 'S', 'Ź': 'Z', 'Ż': 'Z'
-    }
-    for pl, en in replacements.items():
-        name = name.replace(pl, en)
-    name = re.sub(r'[<>:"/\\|?*]', '_', name)
-    name = re.sub(r'\s+', '_', name)
-    name = name.strip('_')
-    return name[:100]
-
-
 def detect_product_type(product_name: str, product_url: str = '', section_name: str = '') -> str:
-    # 1) Priorytet: nazwa sekcji z Kislist
     s = (section_name or '').lower()
     for key, mapped in SECTION_TYPE_MAP:
         if key in s:
             return mapped
-    # 2) Heurystyka po nazwie i URL
+
     text = f"{product_name} {product_url}".lower()
     for ptype, keywords in PRODUCT_TYPES.items():
         for kw in keywords:
@@ -114,7 +94,6 @@ def collect_products(kislist_url: str, limit: int):
             purl = item.get('url') or ''
             if not purl:
                 continue
-            # Prefer producer URLs (ale i tak bierzemy wszystko)
             products.append({'section': sec_name, 'name': name, 'url': purl})
             if len(products) >= limit:
                 return products
@@ -122,8 +101,9 @@ def collect_products(kislist_url: str, limit: int):
 
 
 def main():
-    
+    base = Path(__file__).resolve().parent
     default_out = base / 'output' / 'Produkty_z_Kislist'
+
     ap = argparse.ArgumentParser()
     ap.add_argument('--url', required=True, help='Kislist list-preview URL')
     ap.add_argument('--limit', type=int, default=2, help='Number of products to test (max collected this run)')
@@ -137,7 +117,6 @@ def main():
     out_root = Path(args.output)
     out_root.mkdir(parents=True, exist_ok=True)
 
-    # Logger
     if args.log:
         log_path = Path(args.log)
     else:
@@ -165,11 +144,10 @@ def main():
 
     products = collect_products(args.url, args.limit)
     if not products:
-        print('❌ Nie znaleziono produktów w liście')
+        print('[BŁĄD] Nie znaleziono produktów w liście')
         write_log({'event': 'no_products', 'ts': datetime.now().isoformat()})
         return 2
 
-    # Wczytaj checkpoint
     state_path = Path(args.state)
     start_index = 0
     if state_path.exists():
@@ -184,10 +162,10 @@ def main():
 
     def process_range(s_idx: int, e_idx: int):
         batch_products = products[s_idx:e_idx]
-        print(f'✅ Batch: {len(batch_products)} produktów ({s_idx+1}-{e_idx} z {len(products)})')
-        write_log({'event': 'batch_start', 'from': s_idx+1, 'to': e_idx, 'total': len(products), 'ts': datetime.now().isoformat()})
+        print(f'[INFO] Batch: {len(batch_products)} produktów ({s_idx+1}-{e_idx} z {len(products)})')
+        write_log({'event': 'batch_start', 'from': s_idx + 1, 'to': e_idx, 'total': len(products), 'ts': datetime.now().isoformat()})
         for idx, p in enumerate(batch_products, start=s_idx + 1):
-            ptype = detect_product_type(p['name'], p['url'], p.get('section',''))
+            ptype = detect_product_type(p['name'], p['url'], p.get('section', ''))
             clean_name = sanitize_filename(p['name'])
             product_folder = out_root / ptype / f"{idx:03d}_{clean_name}"
             product_folder.mkdir(parents=True, exist_ok=True)
@@ -198,53 +176,40 @@ def main():
                 scraper.scrape_universal_variants(p['url'], f"{idx:03d}_{clean_name}", str(product_folder), ptype)
                 write_log({'event': 'product_done', 'idx': idx, 'status': 'ok', 'ts': datetime.now().isoformat()})
             except Exception as e:
-                print(f"❌ Błąd produktu {idx}: {e}")
+                print(f"[BŁĄD] Błąd produktu {idx}: {e}")
                 write_log({'event': 'product_done', 'idx': idx, 'status': 'error', 'error': str(e), 'ts': datetime.now().isoformat()})
 
-    # Tryb pojedynczego batcha lub automatyczny loop
+    def save_checkpoint(end_index: int):
+        try:
+            state = {
+                'url': args.url,
+                'last_index': end_index if end_index < len(products) else 0,
+                'total': len(products)
+            }
+            state_path.parent.mkdir(parents=True, exist_ok=True)
+            state_path.write_text(json.dumps(state, ensure_ascii=False, indent=2))
+            print(f"\n[INFO] Zapisano checkpoint: {state_path} -> last_index={state['last_index']}")
+            write_log({'event': 'checkpoint', 'last_index': state['last_index'], 'ts': datetime.now().isoformat()})
+        except Exception as e:
+            print(f"[OSTRZEŻENIE] Nie można zapisać checkpointu: {e}")
+            write_log({'event': 'checkpoint_error', 'error': str(e), 'ts': datetime.now().isoformat()})
+
     if args.auto:
         while start_index < len(products):
             end_index = min(start_index + args.batch, len(products))
             process_range(start_index, end_index)
             start_index = end_index
-            # Zapisz checkpoint po każdym batchu
-            try:
-                state = {
-                    'url': args.url,
-                    'last_index': end_index if end_index < len(products) else 0,
-                    'total': len(products)
-                }
-                state_path.parent.mkdir(parents=True, exist_ok=True)
-                state_path.write_text(json.dumps(state, ensure_ascii=False, indent=2))
-                print(f"\n💾 Zapisano checkpoint: {state_path} -> last_index={state['last_index']}")
-                write_log({'event': 'checkpoint', 'last_index': state['last_index'], 'ts': datetime.now().isoformat()})
-            except Exception as e:
-                print(f"⚠️ Nie można zapisać checkpointu: {e}")
-                write_log({'event': 'checkpoint_error', 'error': str(e), 'ts': datetime.now().isoformat()})
-        print(f"\n🎉 Wszystkie batch'e zakończone. Sprawdź: {out_root}")
+            save_checkpoint(end_index)
+        print(f"\n[OK] Wszystkie batche zakończone. Sprawdź: {out_root}")
         write_log({'event': 'done', 'ts': datetime.now().isoformat()})
         return 0
-    else:
-        end_index = min(start_index + args.batch, len(products))
-        process_range(start_index, end_index)
-        # Zapisz checkpoint
-        try:
-            state = {
-                'url': args.url,
-                'last_index': end_index if end_index < len(products) else 0,  # 0 = zakończono, gotowe do restartu
-                'total': len(products)
-            }
-            state_path.parent.mkdir(parents=True, exist_ok=True)
-            state_path.write_text(json.dumps(state, ensure_ascii=False, indent=2))
-            print(f"\n💾 Zapisano checkpoint: {state_path} -> last_index={state['last_index']}")
-            write_log({'event': 'checkpoint', 'last_index': state['last_index'], 'ts': datetime.now().isoformat()})
-        except Exception as e:
-            print(f"⚠️ Nie można zapisać checkpointu: {e}")
-            write_log({'event': 'checkpoint_error', 'error': str(e), 'ts': datetime.now().isoformat()})
 
-        print(f"\n🎉 Batch zakończony. Sprawdź: {out_root}")
-        write_log({'event': 'done_batch', 'ts': datetime.now().isoformat()})
-        return 0
+    end_index = min(start_index + args.batch, len(products))
+    process_range(start_index, end_index)
+    save_checkpoint(end_index)
+    print(f"\n[OK] Batch zakończony. Sprawdź: {out_root}")
+    write_log({'event': 'done_batch', 'ts': datetime.now().isoformat()})
+    return 0
 
 
 if __name__ == '__main__':
