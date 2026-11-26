@@ -36,7 +36,7 @@ Produkty_z_Kislist/
 
 1. Clone the repository and set up a virtual environment:
    ```bash
-   git clone [https://github.com/SanityOnEdge/KislistScraper-Pro.git](https://github.com/SanityOnEdge/KislistScraper-Pro.git)
+   git clone https://github.com/SanityOnEdge/KislistScraper-Pro.git
    cd KislistScraper-Pro
    python -m venv .venv
    source .venv/bin/activate      # Bash/Zsh (Fish: source .venv/bin/activate.fish)
@@ -49,5 +49,5 @@ Produkty_z_Kislist/
    python run_kislist.py --gui
 
    # Headless CLI batch mode
-   python run_kislist.py --url "[https://kislist.com/list-preview/](https://kislist.com/list-preview/)<LIST_ID>" --auto --batch 50
+   python run_kislist.py --url "https://kislist.com/list-preview/<LIST_ID>" --auto --batch 50
    ```
