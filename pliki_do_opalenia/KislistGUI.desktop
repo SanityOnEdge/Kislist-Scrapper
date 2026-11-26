@@ -2,7 +2,7 @@
 Type=Application
 Name=KislistScraper – GUI
 Comment=Otwórz GUI skrapera Kislist
-Exec=/usr/bin/python /mnt/RZECZY/KislistScraper_Pro/run_kislist.py --gui
+Exec=/path/to/KislistScraper-Pro/pliki_do_odpalenia/run_gui.sh
 Terminal=false
 Icon=applications-graphics
 Categories=Utility;Graphics;
