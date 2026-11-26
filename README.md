@@ -1,11 +1,9 @@
 # KislistScraper Pro
 
-(Autor: Maciej Bronisz)
+(Author: Maciej Bronisz)
 
 
 Automated product variant scraper and data-structuring pipeline for Kislist.com listings. Extracts product metadata, color variants, and high-resolution images from external supplier websites (including Porta, Dekordia, Domni, and Lazienkarium) using Selenium and LLM-based DOM classification.
-
-> **Tip:** Add a screenshot of the Tkinter GUI or a sample `variant_info.json` output right here so reviewers can see the project in action within seconds.
 
 ## Key Features
 
@@ -39,8 +37,8 @@ Products_from_Kislist/
 
 1. Clone the repository and install dependencies:
    ```bash
-   git clone https://github.com/SanityOnEdge/<repo-name>.git
-   cd <repo-name>
+   git clone https://github.com/SanityOnEdge/Kislist-Scrapper.git
+   cd Kislist-Scrapper
    pip install -r requirements.txt
    ```
 2. Configure your LLM backend (local **Ollama** instance or OpenAI API key) in `ai_config.py`.
