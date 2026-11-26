@@ -54,7 +54,7 @@ class KislistScraper:
         self.output_dir.mkdir(exist_ok=True)
         
         for section in sections_data:
-            section_name = self.sanitize_filename(section.get('name', 'bez_nazwy'))
+            section_name = sanitize_filename(section.get('name', 'bez_nazwy'))
             section_dir = self.output_dir / section_name
             section_dir.mkdir(exist_ok=True)
             # Dalsze podkatalogi (pojedyncze produkty) będą tworzone w trakcie przetwarzania
@@ -82,7 +82,7 @@ class KislistScraper:
         print("\nPrzetwarzanie produktów...")
         
         for section in sections_data:
-            section_name = self.sanitize_filename(section.get('name', 'bez_nazwy'))
+            section_name = sanitize_filename(section.get('name', 'bez_nazwy'))
             section_dir = self.output_dir / section_name
             
             print(f"\nPrzetwarzam sekcję: {section.get('name', 'bez_nazwy')}")
@@ -94,7 +94,7 @@ class KislistScraper:
             for idx, item in enumerate(section.get('items', []), 1):
                 # Tworzymy katalog produktu: typ_produktu/nazwa_produktu/
                 product_name_base = item.get('collection') or item.get('supplier_product_uid') or item.get('catalog_nr') or item.get('key') or f"produkt_{idx:03d}"
-                product_name = f"{idx:03d}_{self.sanitize_filename(str(product_name_base))}"
+                product_name = f"{idx:03d}_{sanitize_filename(str(product_name_base))}"
                 product_dir = section_dir / product_name
                 product_dir.mkdir(exist_ok=True)
                 
