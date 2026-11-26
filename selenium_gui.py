@@ -72,17 +72,17 @@ class SeleniumKislistGUI:
                 return
 
             options.binary_location = chrome_binary
+            browser_name = "Chromium" if "chromium" in chrome_binary else "Chrome"
 
             try:
                 service = Service('/usr/bin/chromedriver')
                 driver = webdriver.Chrome(service=service, options=options)
                 driver.quit()
-                browser_name = "Chromium" if "chromium" in chrome_binary else "Chrome"
                 self.log(f"[OK] {browser_name} wykryty - gotowy do pracy.")
             except Exception as e:
                 self.log(f"[OSTRZEŻENIE] Problem z {browser_name}: {str(e)[:50]}...")
                 self.show_chrome_help()
-
+            
         except ImportError:
             self.log("[BŁĄD] Brak Selenium - sprawdź środowisko wirtualne")
 
@@ -127,7 +127,7 @@ Program będzie działał po zainstalowaniu Chrome."""
         self.url_entry = ttk.Entry(left_panel, textvariable=self.url_var, width=60)
         self.url_entry.pack(fill=tk.X, pady=(0, 10))
 
-        example_label = ttk.Label(left_panel, text="Przykład: https://kislist.com/list-preview/CzjnBnLJkchnqmYFI2An2KDZhFA0crwntz7D?lang=pl",
+        example_label = ttk.Label(left_panel, text=f"Przykład: <LIST_ID>",
                                  font=("Arial", 8), foreground="blue", wraplength=450)
         example_label.pack(anchor=tk.W, pady=(0, 15))
 
